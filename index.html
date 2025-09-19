@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feelane</title>
+  <style>
+    :root { --bg: #0f1724; --card: #0b1220; --accent: #7cdbd5; --muted: #9aa6b2; }
+    html,body { height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg, #071021 0%, #0b1220 100%); color: white; }
+    .wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; }
+    .card{ text-align:center; padding:40px 28px; border-radius:18px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); background: rgba(255,255,255,0.02); backdrop-filter: blur(6px); }
+    h1{ margin:0 0 8px 0; font-size:clamp(24px,6vw,48px); letter-spacing: -0.02em; }
+    p{ margin:0; color:var(--muted); }
+    .dot{ display:inline-block; width:10px; height:10px; margin-left:10px; background:var(--accent); border-radius:50%; vertical-align:middle; }
+    @media (max-width:420px){ .card{ padding:28px 18px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="main">
+      <h1>Welcome to Feelane<span class="dot" aria-hidden="true"></span></h1>
+      <p>Your site is ready — replace this file when you want to add content.</p>
+    </div>
+  </div>
+</body>
+</html>
