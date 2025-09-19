@@ -1,26 +1,870 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Feelane</title>
+  <title>AssistAI - Your AI Assistant</title>
   <style>
-    :root { --bg: #0f1724; --card: #0b1220; --accent: #7cdbd5; --muted: #9aa6b2; }
-    html,body { height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg, #071021 0%, #0b1220 100%); color: white; }
-    .wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; }
-    .card{ text-align:center; padding:40px 28px; border-radius:18px; box-shadow: 0 10px 30px rgba(2,6,23,0.6); background: rgba(255,255,255,0.02); backdrop-filter: blur(6px); }
-    h1{ margin:0 0 8px 0; font-size:clamp(24px,6vw,48px); letter-spacing: -0.02em; }
-    p{ margin:0; color:var(--muted); }
-    .dot{ display:inline-block; width:10px; height:10px; margin-left:10px; background:var(--accent); border-radius:50%; vertical-align:middle; }
-    @media (max-width:420px){ .card{ padding:28px 18px; } }
+    :root{
+      --bg-dark: #0e0e11;
+      --panel: #141416;
+      --card-grad-start: rgba(255,255,255,0.02);
+      --card-grad-end: rgba(255,255,255,0.01);
+      --muted: #a2a6aa;
+      --accent-start: #8c6bff;
+      --accent-end: #6f4bff;
+      --secondary-start: #4a90e2;
+      --secondary-end: #357abd;
+      --tertiary-start: #e67e22;
+      --tertiary-end: #d35400;
+      --white: #ffffff;
+      --card-radius: 14px;
+      --title-font: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(180deg, #0b0b0d 0%, #0f0f12 100%);
+      font-family: var(--title-font);
+      color: var(--white);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+    }
+
+    .app-header{
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      background: transparent;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+    
+    .app-header .title{
+      font-weight: 700;
+      font-size: 20px;
+      color: rgba(255,255,255,0.95);
+      letter-spacing: 0.5px;
+    }
+
+    .main-area{
+      padding: 20px;
+      height: calc(100vh - 64px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .welcome-card{
+      width: 100%;
+      max-width: 500px;
+      background: linear-gradient(180deg, var(--card-grad-start), var(--card-grad-end));
+      border-radius: var(--card-radius);
+      padding: 40px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+
+    .logo-large{
+      width: 160px;
+      height: 160px;
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      color: white;
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
+      margin-bottom: 10px;
+    }
+
+    .brand-name{
+      font-weight: 800;
+      font-size: 28px;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .welcome-title{
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .button-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .main-btn{
+      width: 90%;
+      height: 60px;
+      border-radius: 15px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--white);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .main-btn:not(.secondary):not(.tertiary) {
+      background: linear-gradient(180deg, var(--accent-start), var(--accent-end));
+      box-shadow: 0 15px 35px rgba(111,75,255,0.25), inset 0 -2px 8px rgba(0,0,0,0.2);
+    }
+
+    .main-btn.secondary {
+      background: linear-gradient(180deg, var(--secondary-start), var(--secondary-end));
+      box-shadow: 0 15px 35px rgba(67,144,226,0.25), inset 0 -2px 8px rgba(0,0,0,0.2);
+    }
+
+    .main-btn.tertiary {
+      background: linear-gradient(180deg, var(--tertiary-start), var(--tertiary-end));
+      box-shadow: 0 15px 35px rgba(230,126,34,0.25), inset 0 -2px 8px rgba(0,0,0,0.2);
+    }
+
+    .main-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    .main-btn:not(.secondary):not(.tertiary):hover {
+      box-shadow: 0 20px 45px rgba(111,75,255,0.35);
+    }
+
+    .main-btn.secondary:hover {
+      box-shadow: 0 20px 45px rgba(67,144,226,0.35);
+    }
+
+    .main-btn.tertiary:hover {
+      box-shadow: 0 20px 45px rgba(230,126,34,0.35);
+    }
+
+    .main-btn:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* Screen layouts */
+    .screen{
+      width: 100%;
+      max-width: 800px;
+      height: calc(100vh - 104px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.02);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .screen-topbar{
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 10px 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex-shrink: 0;
+    }
+
+    .back-btn{
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.9);
+      font-size: 18px;
+      cursor: pointer;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .back-btn:hover{
+      background: rgba(255,255,255,0.1);
+    }
+
+    .screen-header-title{
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .screen-header-spacer{ width: 44px; }
+
+    /* Chat specific styles */
+    .chat-messages{
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      max-width: 70%;
+      padding: 15px 20px;
+      border-radius: 18px;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      color: #fff;
+      border-bottom-right-radius: 8px;
+    }
+
+    .msg.ai {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.95);
+      border-bottom-left-radius: 8px;
+    }
+
+    .msg img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .chat-controls{
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      padding: 15px 20px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      background: linear-gradient(180deg, rgba(0,0,0,0.05), transparent);
+      flex: 0 0 auto;
+    }
+
+    .small-btn {
+      background: rgba(255,255,255,0.05);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: background 0.2s ease;
+    }
+
+    .small-btn:hover{
+      background: rgba(255,255,255,0.1);
+    }
+
+    .text-input, .text-area-input{
+      flex: 1;
+      padding: 15px 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.3);
+      color: rgba(255,255,255,0.95);
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s ease;
+    }
+
+    .text-input{
+      height: 52px;
+    }
+
+    .text-area-input{
+      min-height: 80px;
+      max-height: 150px;
+      resize: vertical;
+    }
+
+    .text-input:focus, .text-area-input:focus{
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    .send-btn {
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      color: #fff;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform 0.2s ease;
+    }
+
+    .send-btn:hover{
+      transform: translateY(-1px);
+    }
+
+    .define-btn {
+      background: linear-gradient(135deg, var(--secondary-start), var(--secondary-end));
+      color: #fff;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .define-btn:hover{
+      transform: translateY(-1px);
+    }
+
+    .define-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Search and results areas */
+    .search-area{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      flex: 0 0 auto;
+    }
+
+    .results-area{
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+
+    /* Summarizer options */
+    .summarizer-options{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      padding: 50px 30px;
+    }
+
+    .summarizer-option-btn{
+      width: 80%;
+      max-width: 400px;
+      height: 70px;
+      border-radius: 15px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      box-shadow: 0 15px 35px rgba(111,75,255,0.25);
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .summarizer-option-btn.detailed{
+      background: linear-gradient(135deg, var(--tertiary-start), var(--tertiary-end));
+      box-shadow: 0 15px 35px rgba(230,126,34,0.25);
+    }
+
+    .summarizer-option-btn:hover{
+      transform: translateY(-3px);
+    }
+
+    .summarizer-option-btn:not(.detailed):hover{
+      box-shadow: 0 20px 45px rgba(111,75,255,0.35);
+    }
+
+    .summarizer-option-btn.detailed:hover{
+      box-shadow: 0 20px 45px rgba(230,126,34,0.35);
+    }
+
+    .msg.loading {
+      opacity: 0.8;
+      font-style: italic;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* Hide screens by default */
+    .screen { display: none; }
+    .welcome-card { display: flex; }
+
+    /* File input styling */
+    .file-input { display: none; }
+
+    /* Definition styling */
+    .definition-container{
+      color: rgba(255,255,255,0.95);
+      line-height: 1.6;
+    }
+
+    .word-header{
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .word-title{
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }
+
+    .phonetic{
+      font-size: 18px;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .phonetics-section{
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .phonetic-item{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.05);
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+
+    .phonetic-text{
+      font-style: italic;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .play-audio{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .play-audio:hover{
+      opacity: 1;
+    }
+
+    .meanings-section{
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .meaning-group{
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .part-of-speech{
+      color: var(--secondary-start);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-transform: capitalize;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 8px;
+    }
+
+    .definitions{
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .definition-item{
+      padding-left: 10px;
+    }
+
+    .definition-text{
+      color: rgba(255,255,255,0.95);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .example{
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      margin-bottom: 8px;
+      padding-left: 20px;
+      border-left: 3px solid rgba(255,255,255,0.1);
+    }
+
+    .synonyms, .antonyms{
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .synonyms{
+      color: rgba(76, 175, 80, 0.9);
+    }
+
+    .antonyms{
+      color: rgba(244, 67, 54, 0.9);
+    }
+
+    .definition-error{
+      text-align: center;
+      padding: 60px 30px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .definition-error h3{
+      color: rgba(244, 67, 54, 0.9);
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .definition-error p{
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px){
+      .main-area { padding: 15px; }
+      .welcome-card { padding: 30px 25px; }
+      .logo-large { width: 120px; height: 120px; font-size: 50px; }
+      .brand-name { font-size: 24px; }
+      .welcome-title { font-size: 16px; }
+      .main-btn { height: 55px; font-size: 15px; }
+      .msg { max-width: 85%; }
+      .screen { max-width: 95%; }
+      .word-title { font-size: 24px; }
+      .summarizer-option-btn { width: 90%; height: 60px; font-size: 16px; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" role="main">
-      <h1>Welcome to Feelane<span class="dot" aria-hidden="true"></span></h1>
-      <p>Your site is ready — replace this file when you want to add content.</p>
-    </div>
-  </div>
+  <header class="app-header">
+    <div class="title">AssistAI</div>
+  </header>
+
+  <main class="main-area">
+    <!-- Welcome Card -->
+    <section class="welcome-card" id="welcomeCard">
+      <div class="logo-large">🧠</div>
+      <div class="brand-name">AssistAI</div>
+      <h1 class="welcome-title">Your Intelligent Assistant</h1>
+      <div class="button-group">
+        <button id="openChatBtn" class="main-btn">Open Chat</button>
+        <button id="openDictionaryBtn" class="main-btn secondary">Word Definition</button>
+        <button id="openSummarizerBtn" class="main-btn tertiary">Summarizer</button>
+      </div>
+    </section>
+
+    <!-- Chat Screen -->
+    <section class="screen" id="chatScreen">
+      <div class="screen-topbar">
+        <button id="backFromChat" class="back-btn">←</button>
+        <div class="screen-header-title">AI Chat</div>
+        <div class="screen-header-spacer"></div>
+      </div>
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="chat-controls">
+        <button id="selectAreaBtn" class="small-btn">📷 Capture</button>
+        <input type="text" id="chatInput" class="text-input" placeholder="Type your message..." />
+        <button id="sendChatBtn" class="send-btn">Send</button>
+      </div>
+    </section>
+
+    <!-- Dictionary Screen -->
+    <section class="screen" id="dictionaryScreen">
+      <div class="screen-topbar">
+        <button id="backFromDict" class="back-btn">←</button>
+        <div class="screen-header-title">Word Definition</div>
+        <div class="screen-header-spacer"></div>
+      </div>
+      <div class="search-area">
+        <input type="text" id="wordInput" class="text-input" placeholder="Enter a word to define..." />
+        <button id="defineBtn" class="define-btn">Define</button>
+      </div>
+      <div id="definitionResults" class="results-area"></div>
+    </section>
+
+    <!-- Summarizer Screen -->
+    <section class="screen" id="summarizerScreen">
+      <div class="screen-topbar">
+        <button id="backFromSummarizer" class="back-btn">←</button>
+        <div class="screen-header-title">Summarizer</div>
+        <div class="screen-header-spacer"></div>
+      </div>
+      <div class="summarizer-options">
+        <button id="simpleSummarizerBtn" class="summarizer-option-btn">Simple Summarizer</button>
+        <button id="detailedSummarizerBtn" class="summarizer-option-btn detailed">Detailed Summarizer</button>
+      </div>
+    </section>
+
+    <!-- Simple Summarizer Screen -->
+    <section class="screen" id="simpleSummarizerScreen">
+      <div class="screen-topbar">
+        <button id="backFromSimple" class="back-btn">←</button>
+        <div class="screen-header-title">Simple Summarizer</div>
+        <div class="screen-header-spacer"></div>
+      </div>
+      <div id="simpleChatMessages" class="chat-messages"></div>
+      <div class="chat-controls">
+        <textarea id="simpleTextInput" class="text-area-input" placeholder="Paste your text here to summarize..."></textarea>
+        <button id="simpleSummarizeBtn" class="send-btn">Summarize</button>
+      </div>
+    </section>
+
+    <!-- Detailed Summarizer Screen -->
+    <section class="screen" id="detailedSummarizerScreen">
+      <div class="screen-topbar">
+        <button id="backFromDetailed" class="back-btn">←</button>
+        <div class="screen-header-title">Detailed Summarizer</div>
+        <div class="screen-header-spacer"></div>
+      </div>
+      <div id="detailedChatMessages" class="chat-messages"></div>
+      <div class="chat-controls">
+        <input type="file" id="fileInput" class="file-input" accept=".pdf,.txt,.doc,.docx" />
+        <button id="attachFileBtn" class="small-btn">📎 Attach File</button>
+        <textarea id="detailedTextInput" class="text-area-input" placeholder="Paste your text here or attach a file..."></textarea>
+        <button id="detailedSummarizeBtn" class="send-btn">📋 Analyze</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Global variables
+    let lastImageData = null;
+    let isSending = false;
+    let isDefining = false;
+    let isSummarizing = false;
+    let attachedFile = null;
+
+    // DOM elements
+    const welcomeCard = document.getElementById('welcomeCard');
+    const chatScreen = document.getElementById('chatScreen');
+    const dictionaryScreen = document.getElementById('dictionaryScreen');
+    const summarizerScreen = document.getElementById('summarizerScreen');
+    const simpleSummarizerScreen = document.getElementById('simpleSummarizerScreen');
+    const detailedSummarizerScreen = document.getElementById('detailedSummarizerScreen');
+
+    // Utility functions
+    function showScreen(screenElement) {
+      hideAllScreens();
+      screenElement.style.display = 'flex';
+    }
+
+    function hideAllScreens() {
+      document.querySelectorAll('.screen, .welcome-card').forEach(screen => {
+        screen.style.display = 'none';
+      });
+  </script>
 </body>
 </html>
+    }
+
+    function showWelcome() {
+      hideAllScreens();
+      welcomeCard.style.display = 'flex';
+    }
+
+    function appendMessage(role, content, isImage = false, container = null) {
+      if (!container) container = document.getElementById('chatMessages');
+      
+      const msgEl = document.createElement('div');
+      msgEl.className = `msg ${role}`;
+      
+      if (isImage) {
+        const img = document.createElement('img');
+        img.src = content;
+        img.alt = 'screenshot';
+        msgEl.appendChild(img);
+      } else {
+        msgEl.textContent = content;
+      }
+      
+      container.appendChild(msgEl);
+      container.scrollTop = container.scrollHeight;
+      return msgEl;
+    }
+
+    // Navigation event listeners
+    document.getElementById('openChatBtn').addEventListener('click', () => {
+      showScreen(chatScreen);
+      document.getElementById('chatInput').focus();
+    });
+
+    document.getElementById('openDictionaryBtn').addEventListener('click', () => {
+      showScreen(dictionaryScreen);
+      document.getElementById('wordInput').focus();
+    });
+
+    document.getElementById('openSummarizerBtn').addEventListener('click', () => {
+      showScreen(summarizerScreen);
+    });
+
+    document.getElementById('simpleSummarizerBtn').addEventListener('click', () => {
+      showScreen(simpleSummarizerScreen);
+      document.getElementById('simpleTextInput').focus();
+    });
+
+    document.getElementById('detailedSummarizerBtn').addEventListener('click', () => {
+      showScreen(detailedSummarizerScreen);
+      document.getElementById('detailedTextInput').focus();
+    });
+
+    // Back button listeners
+    document.getElementById('backFromChat').addEventListener('click', showWelcome);
+    document.getElementById('backFromDict').addEventListener('click', showWelcome);
+    document.getElementById('backFromSummarizer').addEventListener('click', showWelcome);
+    document.getElementById('backFromSimple').addEventListener('click', () => showScreen(summarizerScreen));
+    document.getElementById('backFromDetailed').addEventListener('click', () => showScreen(summarizerScreen));
+
+    // Chat functionality
+    async function sendChatMessage() {
+      if (isSending) return;
+      
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !lastImageData) return;
+
+      isSending = true;
+      
+      if (text) appendMessage('user', text);
+      if (lastImageData && !text) {
+        appendMessage('user', lastImageData, true);
+      }
+
+      const loadingEl = appendMessage('ai', 'Thinking...');
+      loadingEl.classList.add('loading');
+
+      try {
+        const payload = lastImageData 
+          ? { message: text || "Analyze this image", image: lastImageData }
+          : { message: text };
+          
+        const response = await fetch('https://sarosh.site/api/chat2', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        loadingEl.remove();
+        
+        const reply = data?.reply || data?.message || 'No reply from server.';
+        appendMessage('ai', reply);
+        
+        input.value = '';
+        lastImageData = null;
+      } catch (error) {
+        console.error('Chat error:', error);
+        loadingEl.remove();
+        appendMessage('ai', '⚠️ Error contacting AI server.');
+      } finally {
+        isSending = false;
+      }
+    }
+
+    document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
+    document.getElementById('chatInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+
+    // Screen capture functionality (simplified for web)
+    document.getElementById('selectAreaBtn').addEventListener('click', async () => {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { mediaSource: 'screen' }
+        });
+        
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        
+        video.addEventListener('loadedmetadata', () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0);
+          
+          lastImageData = canvas.toDataURL('image/png');
+          appendMessage('user', 'Screen captured:', false);
+          appendMessage('user', lastImageData, true);
+          
+          stream.getTracks().forEach(track => track.stop());
+        });
+      } catch (error) {
+        console.error('Screen capture error:', error);
+        appendMessage('ai', '⚠️ Screen capture not supported or permission denied.');
+      }
+    });
+
+    // Dictionary functionality
+    async function defineWord() {
+      if (isDefining) return;
+      
+      const wordInput = document.getElementById('wordInput');
+      const word = wordInput.value.trim();
+      if (!word) return;
+
+      isDefining = true;
+      const defineBtn = document.getElementById('defineBtn');
+      defineBtn.textContent = 'Defining...';
+      defineBtn.disabled = true;
+
+      const resultsContainer = document.getElementById('definitionResults');
+      resultsContainer.innerHTML = '';
+
+      try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+        
+        if (!response.ok) {
+          throw new Error(`Word not found: ${response.status}`);
+        }
+
+        const data = await response.json();
+        displayDefinition(data, resultsContainer);
+      } catch (error) {
+        console.
